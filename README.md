@@ -1,4 +1,6 @@
-﻿Run spring backend server via IntelliJ / Eclipse IDE
+﻿Run spring backend server via IntelliJ / Eclipse IDE / terminal: 
+
+ **mvn spring-boot:run**
 
 Run frontend server: 
 
