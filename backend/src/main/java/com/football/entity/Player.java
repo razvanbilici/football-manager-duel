@@ -34,4 +34,13 @@ public class Player {
 
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
+
+    private Integer age;
+    private Integer heightCm;
+    private String nationality;
+    private String preferredFoot;
+    private Integer shirtNumber;
+
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private Boolean available = true;
 }

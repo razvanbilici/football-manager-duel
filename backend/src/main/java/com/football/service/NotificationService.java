@@ -11,12 +11,14 @@ import com.football.repository.NotificationRepository;
 import com.football.repository.TransferProposalRepository;
 import com.football.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -37,6 +39,8 @@ public class NotificationService {
                 proposal.getOfferedPrice().doubleValue(),
                 proposal.getPlayer().getName()));
         notificationRepository.save(n);
+        log.debug("Notification created for user {}: transfer offer on proposal {}",
+                seller.getEmail(), proposal.getId());
     }
 
     public List<NotificationResponse> getAll(String email) {

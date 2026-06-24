@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PlayerRepository extends JpaRepository<Player, Long> {
+public interface PlayerRepository extends JpaRepository<Player, Long>, org.springframework.data.jpa.repository.JpaSpecificationExecutor<Player> {
     List<Player> findByPlayerTeamId(Long teamId);
 
     @Query("SELECT p FROM Player p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :q, '%')) " +

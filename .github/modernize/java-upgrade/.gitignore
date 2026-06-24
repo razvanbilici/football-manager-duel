@@ -1,0 +1,18 @@
+# Java build
+backend/target/
+
+# Baza de date locala (fiecare are a lui, nu se pune pe GitHub)
+football.db
+
+# Frontend dependencies
+frontend/node_modules/
+frontend/dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

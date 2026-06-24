@@ -10,12 +10,14 @@ import com.football.exception.ResourceNotFoundException;
 import com.football.repository.*;
 import com.football.util.SquadSlots;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserTeamService {
@@ -40,6 +42,7 @@ public class UserTeamService {
     public UserTeamResponse update(Long teamId, String email, UpdateUserTeamRequest req) {
         UserTeam team = findById(teamId);
         assertOwner(team, email);
+        log.info("Updating team {} for user {}", teamId, email);
 
         if (req.getName() != null) team.setName(req.getName());
 
@@ -68,21 +71,28 @@ public class UserTeamService {
         if (req.getSlotNumber() == null
                 || req.getSlotNumber() < SquadSlots.LINEUP_MIN
                 || req.getSlotNumber() > SquadSlots.LINEUP_MAX) {
+            log.warn("Invalid slot number {} for team {}", req.getSlotNumber(), teamId);
             throw new BadRequestException("Slot must be between 1 and 11");
         }
 
         UserTeamPlayer utp = userTeamPlayerRepository
                 .findByUserTeamIdAndPlayerId(teamId, req.getPlayerId())
-                .orElseThrow(() -> new BadRequestException(
-                        "Player is not in your squad. Buy them from a club first."));
+                .orElseThrow(() -> {
+                    log.warn("Player {} not in squad of team {}: must be purchased first",
+                            req.getPlayerId(), teamId);
+                    return new BadRequestException(
+                            "Player is not in your squad. Buy them from a club first.");
+                });
 
         if (team.getFormation() == null) {
+            log.warn("Team {} has no formation set; cannot place players on pitch", teamId);
             throw new BadRequestException("Save a formation before placing players on the pitch");
         }
 
         boolean validSlot = team.getFormation().getPositions().stream()
                 .anyMatch(fp -> fp.getSlotNumber().equals(req.getSlotNumber()));
         if (!validSlot) {
+            log.warn("Slot {} is invalid for the current formation of team {}", req.getSlotNumber(), teamId);
             throw new BadRequestException("Invalid slot for current formation");
         }
 
@@ -123,14 +133,17 @@ public class UserTeamService {
     public UserTeamResponse submit(Long teamId, String email) {
         UserTeam team = findById(teamId);
         assertOwner(team, email);
+        log.info("Submitting team {} for user {}", teamId, email);
 
         long lineupCount = userTeamPlayerRepository
                 .countByUserTeamIdAndSlotNumberBetween(teamId, SquadSlots.LINEUP_MIN, SquadSlots.LINEUP_MAX);
         if (lineupCount < 11) {
+            log.warn("Team {} cannot be submitted: only {}/11 lineup slots filled", teamId, lineupCount);
             throw new BadRequestException(
                     "Team must have 11 players assigned to formation slots to submit");
         }
         if (team.getFormation() == null) {
+            log.warn("Team {} cannot be submitted: no formation selected", teamId);
             throw new BadRequestException("Select a formation before submitting");
         }
 

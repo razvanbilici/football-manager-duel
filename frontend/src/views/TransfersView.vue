@@ -31,6 +31,8 @@ const tabs = [
 
 const visibleTabs = computed(() => tabs.filter((t) => !t.auth || auth.isLoggedIn))
 
+const isMyListing = (listing) => listing.userTeamId === auth.user?.userTeam?.id
+
 async function load() {
   loading.value = true
   try {
@@ -118,40 +120,44 @@ onMounted(load)
 <template>
   <div>
     <h1 class="text-2xl font-bold mb-2">Transferuri</h1>
-    <p class="text-slate-400 mb-6">Cumpără, vinde și negociază jucători între utilizatori.</p>
+    <p class="mb-6 text-sm" style="color: var(--text-muted)">Cumpără, vinde și negociază jucători între utilizatori.</p>
 
+    <!-- Tab bar -->
     <div class="flex flex-wrap gap-2 mb-6">
       <button
         v-for="t in visibleTabs"
         :key="t.id"
         @click="tab = t.id"
-        :class="[
-          'px-4 py-2 rounded-lg text-sm transition-colors',
-          tab === t.id ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700',
-        ]"
+        class="px-4 py-2 rounded-lg text-sm transition-colors"
+        :style="tab === t.id
+          ? 'background: var(--accent); color: #0d1117; font-weight: 600'
+          : 'background: var(--bg-elevated); color: var(--text-muted)'"
       >
         {{ t.label }}
         <span
           v-if="t.id === 'offers' && incoming.length"
-          class="ml-1 px-1.5 py-0.5 rounded-full bg-red-500 text-[10px]"
+          class="ml-1 px-1.5 py-0.5 rounded-full bg-red-500 text-[10px] text-white"
         >
           {{ incoming.length }}
         </span>
       </button>
     </div>
 
-    <p v-if="message" class="mb-4 text-sm" :class="isError(message) ? 'text-red-400' : 'text-emerald-400'">
+    <p v-if="message" class="mb-4 text-sm"
+      :style="{ color: isError(message) ? 'var(--danger)' : 'var(--success)' }">
       {{ message }}
     </p>
 
-    <div v-if="loading" class="text-slate-400">Se încarcă...</div>
+    <!-- Skeleton -->
+    <div v-if="loading" class="space-y-3">
+      <div v-for="i in 4" :key="i" class="skeleton h-28 rounded-xl" />
+    </div>
 
     <!-- Market -->
     <div v-else-if="tab === 'market'">
-      <div
-        v-if="offerForm.playerId"
-        class="mb-6 p-4 rounded-xl bg-slate-900 border border-emerald-800"
-      >
+      <!-- Offer form -->
+      <div v-if="offerForm.playerId" class="mb-6 p-4 rounded-xl"
+        style="background: var(--bg-surface); border: 1px solid var(--accent)">
         <h3 class="font-semibold mb-3">Trimite ofertă de cumpărare</h3>
         <div class="flex flex-col sm:flex-row gap-3">
           <input
@@ -159,88 +165,86 @@ onMounted(load)
             type="number"
             min="1"
             placeholder="Sumă oferită (€)"
-            class="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 outline-none focus:border-emerald-500"
+            class="flex-1 px-3 py-2 rounded-lg text-sm outline-none"
+            style="background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary)"
           />
-          <button
-            @click="sendOffer"
-            class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500"
-          >
+          <button @click="sendOffer"
+            class="px-4 py-2 rounded-lg text-sm font-semibold"
+            style="background: var(--accent); color: #0d1117">
             Trimite oferta
           </button>
           <button
             @click="offerForm = { listingId: null, playerId: null, fromUserTeamId: null, price: '' }"
-            class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700"
-          >
+            class="px-4 py-2 rounded-lg text-sm"
+            style="background: var(--bg-elevated); color: var(--text-muted)">
             Anulează
           </button>
         </div>
       </div>
 
-      <div v-if="listings.length === 0" class="text-slate-400">
+      <div v-if="listings.length === 0" class="text-sm" style="color: var(--text-muted)">
         Niciun jucător listat. Vinde jucători din secțiunea Echipa mea.
       </div>
       <div v-else class="grid sm:grid-cols-2 gap-4">
-        <div
-          v-for="listing in listings"
-          :key="listing.id"
-          class="p-4 rounded-xl bg-slate-900 border border-slate-800"
-        >
+        <div v-for="listing in listings" :key="listing.id"
+          class="p-4 rounded-xl"
+          style="background: var(--bg-surface); border: 1px solid var(--border)">
           <div class="flex gap-3">
             <PlayerAvatar :position="listing.player.position" size="md" />
             <div class="flex-1">
-              <h3 class="font-semibold">{{ listing.player.name }}</h3>
-              <p class="text-sm text-slate-400">{{ listing.player.position }}</p>
-              <p class="text-sm text-slate-500 mt-1">
+              <h3 class="font-semibold" style="color: var(--text-primary)">{{ listing.player.name }}</h3>
+              <p class="text-sm" style="color: var(--text-muted)">{{ listing.player.position }}</p>
+              <p class="text-xs mt-1" style="color: var(--text-muted)">
                 Vânzător: {{ listing.sellerName }} ({{ listing.userTeamName }})
               </p>
-              <p class="text-emerald-400 font-medium mt-2">
+              <p class="text-sm font-semibold mt-2" style="color: var(--accent)">
                 Preț cerut: {{ formatPrice(listing.askingPrice) }}
               </p>
             </div>
           </div>
-          <button
-            v-if="auth.isLoggedIn"
-            @click="openOffer(listing)"
-            class="mt-3 w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm"
-          >
-            Fă o ofertă
-          </button>
+          <template v-if="auth.isLoggedIn">
+            <button v-if="!isMyListing(listing)" @click="openOffer(listing)"
+              class="mt-3 w-full py-2 rounded-lg text-sm font-semibold"
+              style="background: var(--accent); color: #0d1117">
+              Fă o ofertă
+            </button>
+            <div v-else class="mt-3 w-full py-2 rounded-lg text-sm text-center"
+              style="background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border)">
+              Listarea ta
+            </div>
+          </template>
         </div>
       </div>
     </div>
 
     <!-- Incoming offers -->
     <div v-else-if="tab === 'offers'">
-      <div v-if="incoming.length === 0" class="text-slate-400">
+      <div v-if="incoming.length === 0" class="text-sm" style="color: var(--text-muted)">
         Niciună ofertă primită.
       </div>
       <div v-else class="space-y-4">
-        <div
-          v-for="offer in incoming"
-          :key="offer.id"
-          class="p-4 rounded-xl bg-slate-900 border border-slate-800"
-        >
+        <div v-for="offer in incoming" :key="offer.id"
+          class="p-4 rounded-xl"
+          style="background: var(--bg-surface); border: 1px solid var(--border)">
           <div class="flex gap-3 items-start">
             <PlayerAvatar :position="offer.player.position" size="md" />
             <div class="flex-1">
-              <p class="font-semibold">{{ offer.player.name }} ({{ offer.player.position }})</p>
-              <p class="text-sm text-slate-400 mt-1">
-                {{ offer.proposerName }} oferă {{ formatPrice(offer.offeredPrice) }}
+              <p class="font-semibold" style="color: var(--text-primary)">{{ offer.player.name }} ({{ offer.player.position }})</p>
+              <p class="text-sm mt-1" style="color: var(--text-muted)">
+                {{ offer.proposerName }} oferă <span style="color: var(--accent)">{{ formatPrice(offer.offeredPrice) }}</span>
               </p>
-              <p class="text-xs text-slate-500">{{ offer.createdAt }}</p>
+              <p class="text-xs mt-0.5" style="color: var(--text-muted)">{{ offer.createdAt }}</p>
             </div>
           </div>
           <div class="mt-3 flex gap-2">
-            <button
-              @click="acceptOffer(offer.id)"
-              class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm"
-            >
+            <button @click="acceptOffer(offer.id)"
+              class="px-4 py-2 rounded-lg text-sm font-semibold"
+              style="background: var(--success); color: #0d1117">
               Acceptă
             </button>
-            <button
-              @click="rejectOffer(offer.id)"
-              class="px-4 py-2 rounded-lg bg-red-700 hover:bg-red-600 text-sm"
-            >
+            <button @click="rejectOffer(offer.id)"
+              class="px-4 py-2 rounded-lg text-sm font-semibold"
+              style="background: var(--danger); color: white">
               Refuză
             </button>
           </div>
@@ -250,25 +254,20 @@ onMounted(load)
 
     <!-- Sent offers -->
     <div v-else-if="tab === 'sent'">
-      <div v-if="sent.length === 0" class="text-slate-400">Nicio ofertă trimisă.</div>
+      <div v-if="sent.length === 0" class="text-sm" style="color: var(--text-muted)">Nicio ofertă trimisă.</div>
       <div v-else class="space-y-3">
-        <div
-          v-for="offer in sent"
-          :key="offer.id"
-          class="p-4 rounded-xl bg-slate-900 border border-slate-800 flex justify-between items-center gap-4"
-        >
+        <div v-for="offer in sent" :key="offer.id"
+          class="p-4 rounded-xl flex justify-between items-center gap-4"
+          style="background: var(--bg-surface); border: 1px solid var(--border)">
           <div>
-            <span class="font-semibold">{{ offer.player.name }}</span>
-            <span class="text-sm text-slate-400 ml-2">{{ formatPrice(offer.offeredPrice) }}</span>
+            <span class="font-semibold" style="color: var(--text-primary)">{{ offer.player.name }}</span>
+            <span class="text-sm ml-2" style="color: var(--accent)">{{ formatPrice(offer.offeredPrice) }}</span>
           </div>
-          <span
-            :class="[
-              'text-xs px-2 py-1 rounded',
-              offer.status === 'PENDING' && 'bg-amber-900/50 text-amber-300',
-              offer.status === 'ACCEPTED' && 'bg-emerald-900/50 text-emerald-300',
-              offer.status === 'REJECTED' && 'bg-red-900/50 text-red-300',
-            ]"
-          >
+          <span class="text-xs px-2 py-1 rounded"
+            :style="
+              offer.status === 'PENDING'  ? 'background: rgba(227,179,65,0.15); color: var(--warning)'  :
+              offer.status === 'ACCEPTED' ? 'background: rgba(63,185,80,0.15); color: var(--success)'  :
+                                            'background: rgba(248,81,73,0.15); color: var(--danger)'">
             {{ offer.status }}
           </span>
         </div>
@@ -277,21 +276,20 @@ onMounted(load)
 
     <!-- History -->
     <div v-else-if="tab === 'history'">
-      <div v-if="recent.length === 0" class="text-slate-400">Niciun transfer încă.</div>
+      <div v-if="recent.length === 0" class="text-sm" style="color: var(--text-muted)">Niciun transfer încă.</div>
       <div v-else class="space-y-3">
-        <div
-          v-for="t in recent"
-          :key="t.id"
-          class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-xl bg-slate-900 border border-slate-800"
-        >
+        <div v-for="t in recent" :key="t.id"
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-xl"
+          style="background: var(--bg-surface); border: 1px solid var(--border)">
           <div>
-            <span class="font-semibold">{{ t.player.name }}</span>
-            <span class="text-slate-400 text-sm ml-2">({{ t.player.position }})</span>
+            <span class="font-semibold" style="color: var(--text-primary)">{{ t.player.name }}</span>
+            <span class="text-sm ml-2" style="color: var(--text-muted)">({{ t.player.position }})</span>
           </div>
-          <div class="text-sm text-slate-400">{{ t.fromTeamName }} → {{ t.toTeamName }}</div>
+          <div class="text-sm" style="color: var(--text-muted)">{{ t.fromTeamName }} → {{ t.toTeamName }}</div>
           <div class="flex items-center gap-4 text-sm">
-            <span class="text-emerald-400 font-medium">{{ formatPrice(t.price) }}</span>
-            <span class="px-2 py-0.5 rounded bg-slate-800 text-xs">{{ t.type }}</span>
+            <span class="font-semibold" style="color: var(--accent)">{{ formatPrice(t.price) }}</span>
+            <span class="px-2 py-0.5 rounded text-xs"
+              style="background: var(--bg-elevated); color: var(--text-muted)">{{ t.type }}</span>
           </div>
         </div>
       </div>
