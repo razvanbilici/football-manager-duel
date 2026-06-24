@@ -7,11 +7,13 @@ import com.football.exception.BadRequestException;
 import com.football.exception.ResourceNotFoundException;
 import com.football.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class VoteService {
@@ -40,14 +42,15 @@ public class VoteService {
         if (existing.isPresent()) {
             Vote v = existing.get();
             if (v.getVoteType() == voteType) {
-                // Toggle off: remove vote
+                log.debug("User {} toggled off {} vote on {} {}", email, voteType, targetType, targetId);
                 voteRepository.delete(v);
             } else {
-                // Switch vote
+                log.debug("User {} switched vote to {} on {} {}", email, voteType, targetType, targetId);
                 v.setVoteType(voteType);
                 voteRepository.save(v);
             }
         } else {
+            log.debug("User {} cast {} vote on {} {}", email, voteType, targetType, targetId);
             Vote v = new Vote();
             v.setUser(user);
             v.setTargetType(targetType);

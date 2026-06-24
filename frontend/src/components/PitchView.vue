@@ -7,9 +7,10 @@ const props = defineProps({
   formation: { type: Object, default: null },
   players: { type: Array, default: () => [] },
   interactive: { type: Boolean, default: false },
+  dragOverSlot: { type: Number, default: null },
 })
 
-const emit = defineEmits(['slot-click', 'remove'])
+const emit = defineEmits(['slot-click', 'remove', 'drop-on-slot', 'dragover-slot', 'dragleave-slot'])
 
 const layout = computed(() =>
   computePitchLayout(props.formation?.positions || [], props.players),
@@ -26,10 +27,8 @@ const layout = computed(() =>
       <div class="absolute inset-3 border-2 border-white/30 rounded-sm" />
       <div class="absolute left-1/2 top-3 bottom-3 w-0.5 bg-white/30 -translate-x-1/2" />
       <div class="absolute left-1/2 top-1/2 w-24 h-24 border-2 border-white/30 rounded-full -translate-x-1/2 -translate-y-1/2" />
-      <!-- Penalty areas -->
       <div class="absolute left-1/2 bottom-3 w-2/5 h-1/5 border-2 border-white/30 border-b-0 -translate-x-1/2" />
       <div class="absolute left-1/2 top-3 w-2/5 h-1/5 border-2 border-white/30 border-t-0 -translate-x-1/2" />
-      <!-- Goals -->
       <div class="absolute left-1/2 bottom-0 w-1/4 h-1 border-2 border-white/40 border-b-0 -translate-x-1/2" />
       <div class="absolute left-1/2 top-0 w-1/4 h-1 border-2 border-white/40 border-t-0 -translate-x-1/2" />
     </div>
@@ -43,6 +42,9 @@ const layout = computed(() =>
       :key="item.slotNumber"
       class="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5"
       :style="{ top: `${item.top}%`, left: `${item.left}%` }"
+      @dragover.prevent="emit('dragover-slot', item.slotNumber)"
+      @dragleave="emit('dragleave-slot', item.slotNumber)"
+      @drop.prevent="emit('drop-on-slot', $event, item.slotNumber)"
     >
       <button
         v-if="interactive"
@@ -53,7 +55,10 @@ const layout = computed(() =>
         <PlayerAvatar v-if="item.player" :position="item.position" size="md" />
         <div
           v-else
-          class="w-14 h-14 rounded-full border-2 border-dashed border-white/40 bg-black/20 flex items-center justify-center text-xs text-white/50"
+          class="w-14 h-14 rounded-full border-2 border-dashed border-white/40 bg-black/20 flex items-center justify-center text-xs text-white/50 transition-all duration-200"
+          :style="dragOverSlot === item.slotNumber
+            ? 'border-color: #00d4aa; background: rgba(0,212,170,0.2); box-shadow: 0 0 14px rgba(0,212,170,0.5); border-style: solid'
+            : ''"
         >
           {{ item.position }}
         </div>

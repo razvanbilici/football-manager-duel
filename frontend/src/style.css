@@ -1,5 +1,48 @@
 @import "tailwindcss";
 
+:root {
+  --accent: #00d4aa;
+  --accent-dim: #009e80;
+  --bg-base: #0d1117;
+  --bg-surface: #161b22;
+  --bg-elevated: #21262d;
+  --border: #30363d;
+  --text-primary: #e6edf3;
+  --text-muted: #8b949e;
+  --danger: #f85149;
+  --warning: #e3b341;
+  --success: #3fb950;
+}
+
 body {
-  @apply bg-slate-950 text-slate-100 antialiased;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  @apply antialiased;
+}
+
+/* Subtle diagonal stripe texture on body */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 24px,
+    rgba(255,255,255,0.013) 24px,
+    rgba(255,255,255,0.013) 25px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Skeleton loader animation */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.65; }
+}
+.skeleton {
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
 }

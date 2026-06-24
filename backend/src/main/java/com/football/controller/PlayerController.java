@@ -20,11 +20,14 @@ public class PlayerController {
 
     @GetMapping
     public ResponseEntity<List<PlayerResponse>> getAll(
-            @RequestParam(required = false) String q) {
-        if (q != null && !q.isBlank()) {
-            return ResponseEntity.ok(playerService.search(q));
-        }
-        return ResponseEntity.ok(playerService.getAll());
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String position,
+            @RequestParam(required = false) java.math.BigDecimal minPrice,
+            @RequestParam(required = false) java.math.BigDecimal maxPrice,
+            @RequestParam(required = false) Integer minAge,
+            @RequestParam(required = false) Integer maxAge,
+            @RequestParam(required = false) Boolean available) {
+        return ResponseEntity.ok(playerService.filter(q, position, minPrice, maxPrice, minAge, maxAge, available));
     }
 
     @GetMapping("/{id}")

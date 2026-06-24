@@ -21,6 +21,12 @@ public class MapperService {
             r.setPlayerTeamId(p.getPlayerTeam().getId());
             r.setPlayerTeamName(p.getPlayerTeam().getName());
         }
+        r.setAge(p.getAge());
+        r.setHeightCm(p.getHeightCm());
+        r.setNationality(p.getNationality());
+        r.setPreferredFoot(p.getPreferredFoot());
+        r.setShirtNumber(p.getShirtNumber());
+        r.setAvailable(p.getAvailable() != null ? p.getAvailable() : true);
         return r;
     }
 

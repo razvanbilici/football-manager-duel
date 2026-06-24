@@ -12,6 +12,7 @@ import com.football.exception.ResourceNotFoundException;
 import com.football.repository.*;
 import com.football.util.SquadSlots;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransferService {
@@ -52,6 +54,8 @@ public class TransferService {
 
         BigDecimal price = player.getPrice();
         if (buyer.getBudget() < price.doubleValue()) {
+            log.warn("Insufficient budget for user {}: required {}, available {}",
+                    email, price, buyer.getBudget());
             throw new BadRequestException("Insufficient budget");
         }
 
@@ -76,7 +80,9 @@ public class TransferService {
         t.setType(Transfer.TransferType.BUY_FROM_CLUB);
         t.setDate(LocalDateTime.now());
 
-        return mapper.toTransferResponse(transferRepository.save(t));
+        TransferResponse response = mapper.toTransferResponse(transferRepository.save(t));
+        log.info("User {} bought player {} (id: {}) from club for {}", email, player.getName(), playerId, price);
+        return response;
     }
 
     // ─── Listings (sell to market) ────────────────────────────────────────────
@@ -92,7 +98,10 @@ public class TransferService {
         }
 
         listingRepository.findByPlayerIdAndActiveTrue(req.getPlayerId())
-                .ifPresent(l -> { throw new BadRequestException("Player already listed for sale"); });
+                .ifPresent(l -> {
+                    log.warn("Player {} is already listed for sale", req.getPlayerId());
+                    throw new BadRequestException("Player already listed for sale");
+                });
 
         Player player = playerRepository.findById(req.getPlayerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Player not found"));
@@ -111,7 +120,10 @@ public class TransferService {
         listing.setPlayer(player);
         listing.setUserTeam(team);
         listing.setAskingPrice(req.getAskingPrice());
-        return mapper.toListingResponse(listingRepository.save(listing));
+        ListingResponse response = mapper.toListingResponse(listingRepository.save(listing));
+        log.info("User {} listed player {} (id: {}) for sale at {}",
+                email, player.getName(), player.getId(), req.getAskingPrice());
+        return response;
     }
 
     @Transactional
@@ -154,6 +166,8 @@ public class TransferService {
             throw new BadRequestException("Cannot propose to buy from yourself");
         }
         if (proposer.getBudget() < req.getOfferedPrice().doubleValue()) {
+            log.warn("Insufficient budget for proposal by user {}: required {}, available {}",
+                    email, req.getOfferedPrice(), proposer.getBudget());
             throw new BadRequestException("Insufficient budget for this offer");
         }
         if (req.getOfferedPrice().doubleValue() <= 0) {
@@ -178,6 +192,8 @@ public class TransferService {
 
     @Transactional
     public ProposalResponse respondToProposal(Long proposalId, boolean accept, String email) {
+        log.info("User {} {} proposal {}", email, accept ? "accepted" : "rejected", proposalId);
+
         TransferProposal proposal = proposalRepository.findById(proposalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
 
@@ -201,6 +217,8 @@ public class TransferService {
 
         User proposer = proposal.getProposer();
         if (proposer.getBudget() < proposal.getOfferedPrice().doubleValue()) {
+            log.warn("Proposer {} no longer has sufficient budget for proposal {}: required {}, available {}",
+                    proposer.getEmail(), proposalId, proposal.getOfferedPrice(), proposer.getBudget());
             proposal.setStatus(TransferProposal.Status.REJECTED);
             proposalRepository.save(proposal);
             throw new BadRequestException("Proposer no longer has sufficient budget");

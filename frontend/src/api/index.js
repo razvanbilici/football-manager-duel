@@ -11,7 +11,7 @@ export const userApi = {
 }
 
 export const playerApi = {
-  getAll: (q) => api.get('/players', { params: q ? { q } : {} }),
+  getAll: (params = {}) => api.get('/players', { params }),
   getById: (id) => api.get(`/players/${id}`),
 }
 

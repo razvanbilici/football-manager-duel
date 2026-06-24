@@ -1,7 +1,10 @@
 package com.football.dto;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
-@Data public class TransferResponse {
+@Data
+@NoArgsConstructor
+public class TransferResponse {
     public Long id;
     public PlayerResponse player;
     public String fromTeamName;

@@ -9,4 +9,10 @@ import java.math.BigDecimal;
     public BigDecimal price;
     public Long playerTeamId;
     public String playerTeamName;
+    public Integer age;
+    public Integer heightCm;
+    public String nationality;
+    public String preferredFoot;
+    public Integer shirtNumber;
+    public Boolean available;
 }

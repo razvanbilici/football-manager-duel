@@ -1,7 +1,10 @@
 package com.football.dto;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.List;
-@Data public class PlayerTeamResponse {
+@Data
+@NoArgsConstructor
+public class PlayerTeamResponse {
     public Long id;
     public String name;
     public int ucl;

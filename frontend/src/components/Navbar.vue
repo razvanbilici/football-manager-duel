@@ -57,9 +57,13 @@ function logout() {
 </script>
 
 <template>
-  <nav class="border-b border-emerald-900/50 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+  <nav class="backdrop-blur sticky top-0 z-50" style="background-color: var(--bg-surface); border-bottom: 1px solid var(--border)">
+    <!-- Accent top border -->
+    <div style="height: 3px; background: var(--accent)"></div>
+
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <router-link to="/" class="flex items-center gap-2 font-bold text-emerald-400 text-lg shrink-0">
+      <router-link to="/" class="flex items-center gap-2 text-lg shrink-0"
+        style="font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent)">
         <span>⚽</span>
         <span class="hidden sm:inline">Football Manager</span>
       </router-link>
@@ -69,8 +73,9 @@ function logout() {
           v-for="link in visibleLinks"
           :key="link.to"
           :to="link.to"
-          class="px-2 py-1 rounded hover:text-emerald-400 transition-colors whitespace-nowrap"
-          active-class="text-emerald-400 font-medium"
+          class="px-2 py-1 rounded transition-colors whitespace-nowrap"
+          :style="{ color: 'var(--text-muted)' }"
+          active-class="nav-link-active"
         >
           {{ link.label }}
         </router-link>
@@ -82,7 +87,8 @@ function logout() {
             <button
               type="button"
               @click="toggleNotifications"
-              class="relative px-2 py-1 rounded hover:bg-slate-800 transition-colors"
+              class="relative px-2 py-1 rounded transition-colors"
+              :style="{ color: 'var(--text-muted)' }"
               title="Notificări"
             >
               🔔
@@ -96,30 +102,30 @@ function logout() {
 
             <div
               v-if="showNotifications"
-              class="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto rounded-xl bg-slate-900 border border-slate-700 shadow-xl z-50"
+              class="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto rounded-xl shadow-xl z-50"
+              style="background: var(--bg-surface); border: 1px solid var(--border)"
             >
-              <div class="p-3 border-b border-slate-800 flex justify-between items-center">
-                <span class="font-semibold">Notificări</span>
-                <button @click="goToOffers" class="text-xs text-emerald-400 hover:underline">
+              <div class="p-3 flex justify-between items-center" style="border-bottom: 1px solid var(--border)">
+                <span class="font-semibold" style="color: var(--text-primary)">Notificări</span>
+                <button @click="goToOffers" class="text-xs hover:underline" style="color: var(--accent)">
                   Vezi toate ofertele
                 </button>
               </div>
-              <div v-if="notifications.items.length === 0" class="p-4 text-sm text-slate-500">
+              <div v-if="notifications.items.length === 0" class="p-4 text-sm" style="color: var(--text-muted)">
                 Nicio notificare.
               </div>
               <div
                 v-for="n in notifications.items.slice(0, 8)"
                 :key="n.id"
-                :class="[
-                  'p-3 border-b border-slate-800 text-sm',
-                  !n.read && 'bg-emerald-950/30',
-                ]"
+                class="p-3 text-sm"
+                :style="{ borderBottom: '1px solid var(--border)', background: !n.read ? 'rgba(0,212,170,0.05)' : 'transparent' }"
               >
-                <p>{{ n.message }}</p>
+                <p style="color: var(--text-primary)">{{ n.message }}</p>
                 <div v-if="n.proposal && n.proposal.status === 'PENDING'" class="mt-2 flex gap-2">
                   <button
                     @click="goToOffers"
-                    class="text-xs px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-500"
+                    class="text-xs px-2 py-1 rounded"
+                    style="background: var(--accent); color: #0d1117"
                   >
                     Răspunde
                   </button>
@@ -128,22 +134,26 @@ function logout() {
             </div>
           </div>
 
-          <span v-if="auth.user?.budget != null" class="hidden md:inline text-emerald-300">
+          <span v-if="auth.user?.budget != null" class="hidden md:inline" style="color: var(--accent)">
             {{ formatBudget(auth.user.budget) }}
           </span>
-          <span class="hidden sm:inline text-slate-400">{{ auth.user?.name }}</span>
+          <span class="hidden sm:inline" style="color: var(--text-muted)">{{ auth.user?.name }}</span>
           <button
             @click="logout"
-            class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 transition-colors"
+            class="px-3 py-1 rounded transition-colors"
+            style="background: var(--bg-elevated); color: var(--text-primary)"
+            onmouseover="this.style.filter='brightness(0.8)'"
+            onmouseout="this.style.filter=''"
           >
             Ieșire
           </button>
         </template>
         <template v-else>
-          <router-link to="/login" class="px-3 py-1 rounded hover:text-emerald-400">Login</router-link>
+          <router-link to="/login" class="px-3 py-1 rounded transition-colors" style="color: var(--text-muted)">Login</router-link>
           <router-link
             to="/register"
-            class="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 transition-colors"
+            class="px-3 py-1 rounded transition-colors"
+            style="background: var(--accent); color: #0d1117; font-weight: 600"
           >
             Înregistrare
           </router-link>
@@ -152,3 +162,12 @@ function logout() {
     </div>
   </nav>
 </template>
+
+<style scoped>
+.nav-link-active {
+  color: var(--accent) !important;
+  font-weight: 600;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 2px;
+}
+</style>
