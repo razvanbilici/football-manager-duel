@@ -6,6 +6,7 @@ import com.football.dto.UpdateProfileRequest;
 import com.football.dto.UserResponse;
 import com.football.dto.UserStatsResponse;
 import com.football.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,14 +41,14 @@ public class UserController {
 
     @PatchMapping("/me")
     public ResponseEntity<UserResponse> updateProfile(
-            @RequestBody UpdateProfileRequest req,
+            @Valid @RequestBody UpdateProfileRequest req,
             @AuthenticationPrincipal UserDetails ud) {
         return ResponseEntity.ok(userService.updateProfile(ud.getUsername(), req));
     }
 
     @PatchMapping("/me/password")
     public ResponseEntity<MessageResponse> changePassword(
-            @RequestBody ChangePasswordRequest req,
+            @Valid @RequestBody ChangePasswordRequest req,
             @AuthenticationPrincipal UserDetails ud) {
         userService.changePassword(ud.getUsername(), req);
         return ResponseEntity.ok(new MessageResponse("Parola schimbata cu succes"));

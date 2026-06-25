@@ -3,6 +3,7 @@ package com.football.controller;
 import com.football.dto.CreateListingRequest;
 import com.football.dto.CreateProposalRequest;
 import com.football.dto.ListingResponse;
+import com.football.dto.PagedResponse;
 import com.football.dto.ProposalResponse;
 import com.football.dto.TransferResponse;
 import com.football.service.TransferService;
@@ -39,8 +40,10 @@ public class TransferController {
     // ─── Listings ─────────────────────────────────────────────────────────────
 
     @GetMapping("/listings")
-    public ResponseEntity<List<ListingResponse>> getListings() {
-        return ResponseEntity.ok(transferService.getActiveListings());
+    public ResponseEntity<PagedResponse<ListingResponse>> getListings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(transferService.getListingsPaged(page, size));
     }
 
     @GetMapping("/listings/mine")

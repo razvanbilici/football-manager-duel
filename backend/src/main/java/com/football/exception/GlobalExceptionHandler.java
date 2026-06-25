@@ -5,12 +5,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
+        Map<String, Object> errors = new LinkedHashMap<>();
+        errors.put("status", 400);
+        errors.put("error", "Validation failed");
+        Map<String, String> fieldErrors = new LinkedHashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(fe ->
+            fieldErrors.put(fe.getField(), fe.getDefaultMessage()));
+        errors.put("fields", fieldErrors);
+        return ResponseEntity.badRequest().body(errors);
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<MessageResponse> notFound(ResourceNotFoundException ex) {

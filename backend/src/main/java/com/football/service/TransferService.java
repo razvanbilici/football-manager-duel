@@ -16,6 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.football.dto.PagedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -133,6 +139,14 @@ public class TransferService {
                 .orElseThrow(() -> new ResourceNotFoundException("Listing not found"));
         listing.setActive(false);
         listingRepository.save(listing);
+    }
+
+    public PagedResponse<ListingResponse> getListingsPaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<PlayerListing> result = listingRepository.findAll(
+                (root, q, cb) -> cb.isTrue(root.get("active")),
+                pageable);
+        return PagedResponse.of(result.map(mapper::toListingResponse));
     }
 
     public List<ListingResponse> getActiveListings() {
