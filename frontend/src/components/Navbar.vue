@@ -17,6 +17,7 @@ const links = [
   { to: '/my-team', label: 'Echipa mea', auth: true },
   { to: '/profile', label: 'Profil', auth: true },
   { to: '/community', label: 'Comunitate' },
+  { to: '/goat', label: 'GOAT' },
   { to: '/transfers', label: 'Transferuri' },
 ]
 

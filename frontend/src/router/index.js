@@ -10,6 +10,7 @@ const routes = [
   { path: '/clubs/:id', name: 'club-detail', component: () => import('../views/ClubDetailView.vue') },
   { path: '/my-team', name: 'my-team', component: () => import('../views/MyTeamView.vue'), meta: { requiresAuth: true } },
   { path: '/community', name: 'community', component: () => import('../views/CommunityView.vue') },
+  { path: '/goat', name: 'goat', component: () => import('../views/AboutView.vue') },
   { path: '/transfers', name: 'transfers', component: () => import('../views/TransfersView.vue') },
   { path: '/profile', name: 'profile', component: () => import('../views/ProfileView.vue'), meta: { requiresAuth: true } },
   { path: '/admin', name: 'admin', component: () => import('../views/AdminView.vue'), meta: { requiresAuth: true } },
