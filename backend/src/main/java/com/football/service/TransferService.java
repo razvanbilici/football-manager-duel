@@ -239,6 +239,14 @@ public class TransferService {
 
         deactivateListingForPlayer(proposal.getPlayer().getId());
 
+        proposalRepository.findByPlayerIdAndStatus(proposal.getPlayer().getId(), TransferProposal.Status.PENDING)
+                .stream()
+                .filter(p -> !p.getId().equals(proposal.getId()))
+                .forEach(p -> {
+                    p.setStatus(TransferProposal.Status.REJECTED);
+                    proposalRepository.save(p);
+                });
+
         proposer.setBudget(proposer.getBudget() - proposal.getOfferedPrice().doubleValue());
         responder.setBudget(responder.getBudget() + proposal.getOfferedPrice().doubleValue());
         userRepository.save(proposer);

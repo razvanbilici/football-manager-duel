@@ -27,3 +27,13 @@ export function formatPrice(price) {
   if (val >= 1_000_000) return `€${(val / 1_000_000).toFixed(1)}M`
   return `€${(val / 1_000).toFixed(0)}K`
 }
+
+export function formatCompact(value) {
+  if (value == null || isNaN(value)) return '—'
+  const num = Number(value)
+  if (num >= 1_000_000_000_000) return (num / 1_000_000_000_000).toFixed(2).replace(/\.00$/, '') + 'T'
+  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2).replace(/\.00$/, '') + 'B'
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'
+  if (num >= 1_000) return (num / 1_000).toFixed(0) + 'K'
+  return num.toLocaleString('ro-RO')
+}

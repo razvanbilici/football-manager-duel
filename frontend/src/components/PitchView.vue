@@ -55,7 +55,8 @@ const layout = computed(() =>
         <PlayerAvatar v-if="item.player" :position="item.position" size="md" />
         <div
           v-else
-          class="w-14 h-14 rounded-full border-2 border-dashed border-white/40 bg-black/20 flex items-center justify-center text-xs text-white/50 transition-all duration-200"
+          class="w-14 h-14 rounded-full border-2 border-dashed border-white/40 bg-black/20 flex items-center justify-center transition-all duration-200"
+          style="color: rgba(255,255,255,0.7); font-weight: 600; font-size: 0.7rem"
           :style="dragOverSlot === item.slotNumber
             ? 'border-color: #00d4aa; background: rgba(0,212,170,0.2); box-shadow: 0 0 14px rgba(0,212,170,0.5); border-style: solid'
             : ''"
@@ -82,7 +83,8 @@ const layout = computed(() =>
         <PlayerAvatar v-if="item.player" :position="item.position" size="md" />
         <div
           v-else
-          class="w-14 h-14 rounded-full border-2 border-dashed border-white/30 bg-black/10 flex items-center justify-center text-xs text-white/40"
+          class="w-14 h-14 rounded-full border-2 border-dashed border-white/30 bg-black/10 flex items-center justify-center"
+          style="color: rgba(255,255,255,0.7); font-weight: 600; font-size: 0.7rem"
         >
           {{ item.position }}
         </div>

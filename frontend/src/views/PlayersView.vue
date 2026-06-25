@@ -14,6 +14,11 @@ const message = ref('')
 const showFilters = ref(false) // mobile toggle
 const selectedPlayer = ref(null)
 const showModal = ref(false)
+const page = ref(0)
+const totalPages = ref(1)
+const totalElements = ref(0)
+const sortBy = ref('name')
+const sortDir = ref('asc')
 
 const ownedPlayerIds = computed(() => {
   const squad = auth.user?.userTeam?.players || []
@@ -23,6 +28,7 @@ const ownedPlayerIds = computed(() => {
 let debounceTimer = null
 function onFiltersChange(newFilters) {
   filters.value = newFilters
+  page.value = 0
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(load, 350)
 }
@@ -30,8 +36,16 @@ function onFiltersChange(newFilters) {
 async function load() {
   loading.value = true
   try {
-    const { data } = await playerApi.getAll(filters.value)
-    players.value = data
+    const { data } = await playerApi.getAll({
+      ...filters.value,
+      page: page.value,
+      size: 12,
+      sortBy: sortBy.value,
+      sortDir: sortDir.value,
+    })
+    players.value = data.content
+    totalPages.value = data.totalPages
+    totalElements.value = data.totalElements
   } finally {
     loading.value = false
   }
@@ -89,6 +103,26 @@ onMounted(load)
 
       <!-- Player grid -->
       <div class="flex-1">
+        <!-- Sort controls -->
+        <div class="flex items-center gap-2 mb-4 flex-wrap">
+          <span class="text-sm" style="color: var(--text-muted)">Sorteaza:</span>
+          <select v-model="sortBy" @change="page = 0; load()"
+            class="text-sm px-2 py-1.5 rounded outline-none"
+            style="background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary)">
+            <option value="name">Nume</option>
+            <option value="price">Pret</option>
+            <option value="age">Varsta</option>
+          </select>
+          <button @click="sortDir = sortDir === 'asc' ? 'desc' : 'asc'; page = 0; load()"
+            class="px-3 py-1.5 rounded text-sm transition-colors"
+            style="background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-muted)">
+            {{ sortDir === 'asc' ? '↑ Crescator' : '↓ Descrescator' }}
+          </button>
+          <span class="text-xs ml-auto" style="color: var(--text-muted)">
+            {{ totalElements }} jucatori
+          </span>
+        </div>
+
         <!-- Skeleton -->
         <div v-if="loading" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <div v-for="i in 9" :key="i" class="skeleton h-44 rounded-xl" />
@@ -113,6 +147,21 @@ onMounted(load)
             @buy="buyPlayer"
             @view-detail="openDetail"
           />
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="totalPages > 1" class="flex items-center justify-center gap-2 mt-8 flex-wrap">
+          <button @click="page = 0; load()" :disabled="page === 0"
+            class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">««</button>
+          <button @click="page--; load()" :disabled="page === 0"
+            class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">‹ Anterior</button>
+          <span class="text-sm px-3" style="color: var(--text-muted)">
+            {{ page + 1 }} / {{ totalPages }}
+          </span>
+          <button @click="page++; load()" :disabled="page >= totalPages - 1"
+            class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">Urmator ›</button>
+          <button @click="page = totalPages - 1; load()" :disabled="page >= totalPages - 1"
+            class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">»»</button>
         </div>
       </div>
     </div>

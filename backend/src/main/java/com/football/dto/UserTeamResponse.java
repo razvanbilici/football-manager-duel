@@ -9,4 +9,6 @@ import java.util.List;
     public boolean submitted;
     public int votes;
     public List<UserTeamPlayerResponse> players;
+    public Long ownerId;
+    public String ownerName;
 }

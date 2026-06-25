@@ -5,6 +5,7 @@ import lombok.Data;
     public String name;
     public String email;
     public Double budget;
+    public String role;
     public UserTeamResponse userTeam;
     public Long favouritePlayerTeamId;
     public String favouritePlayerTeamName;

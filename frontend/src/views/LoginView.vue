@@ -9,6 +9,7 @@ const route = useRoute()
 
 const email = ref('')
 const password = ref('')
+const rememberMe = ref(false)
 const error = ref('')
 const loading = ref(false)
 
@@ -16,7 +17,7 @@ async function submit() {
   error.value = ''
   loading.value = true
   try {
-    await auth.login(email.value, password.value)
+    await auth.login(email.value, password.value, rememberMe.value)
     router.push(route.query.redirect || '/my-team')
   } catch (e) {
     error.value = e.response?.data?.message || 'Email sau parolă incorectă'
@@ -47,6 +48,12 @@ async function submit() {
           required
           class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 focus:border-emerald-500 outline-none"
         />
+      </div>
+      <div>
+        <label style="color: var(--text-muted); font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer">
+          <input type="checkbox" v-model="rememberMe" />
+          Ține-mă minte (30 zile)
+        </label>
       </div>
       <p v-if="error" class="text-red-400 text-sm">{{ error }}</p>
       <button

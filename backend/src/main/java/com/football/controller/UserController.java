@@ -1,7 +1,10 @@
 package com.football.controller;
 
+import com.football.dto.ChangePasswordRequest;
 import com.football.dto.MessageResponse;
+import com.football.dto.UpdateProfileRequest;
 import com.football.dto.UserResponse;
+import com.football.dto.UserStatsResponse;
 import com.football.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,5 +36,25 @@ public class UserController {
     public ResponseEntity<UserResponse> setFavourite(@PathVariable Long playerTeamId,
                                                       @AuthenticationPrincipal UserDetails ud) {
         return ResponseEntity.ok(userService.setFavouriteTeam(ud.getUsername(), playerTeamId));
+    }
+
+    @PatchMapping("/me")
+    public ResponseEntity<UserResponse> updateProfile(
+            @RequestBody UpdateProfileRequest req,
+            @AuthenticationPrincipal UserDetails ud) {
+        return ResponseEntity.ok(userService.updateProfile(ud.getUsername(), req));
+    }
+
+    @PatchMapping("/me/password")
+    public ResponseEntity<MessageResponse> changePassword(
+            @RequestBody ChangePasswordRequest req,
+            @AuthenticationPrincipal UserDetails ud) {
+        userService.changePassword(ud.getUsername(), req);
+        return ResponseEntity.ok(new MessageResponse("Parola schimbata cu succes"));
+    }
+
+    @GetMapping("/me/stats")
+    public ResponseEntity<UserStatsResponse> myStats(@AuthenticationPrincipal UserDetails ud) {
+        return ResponseEntity.ok(userService.getStats(ud.getUsername()));
     }
 }

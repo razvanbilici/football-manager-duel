@@ -130,8 +130,8 @@ onMounted(load)
         @click="tab = t.id"
         class="px-4 py-2 rounded-lg text-sm transition-colors"
         :style="tab === t.id
-          ? 'background: var(--accent); color: #0d1117; font-weight: 600'
-          : 'background: var(--bg-elevated); color: var(--text-muted)'"
+          ? 'background: transparent; color: var(--accent); font-weight: 600; border-bottom: 2px solid var(--accent); border-radius: 0'
+          : 'background: var(--bg-elevated); color: var(--text-muted); border-bottom: 2px solid transparent; border-radius: 8px'"
       >
         {{ t.label }}
         <span
@@ -149,8 +149,8 @@ onMounted(load)
     </p>
 
     <!-- Skeleton -->
-    <div v-if="loading" class="space-y-3">
-      <div v-for="i in 4" :key="i" class="skeleton h-28 rounded-xl" />
+    <div v-if="loading" class="grid sm:grid-cols-2 gap-4">
+      <div v-for="i in 4" :key="i" class="skeleton h-32 rounded-xl" />
     </div>
 
     <!-- Market -->
@@ -182,13 +182,15 @@ onMounted(load)
         </div>
       </div>
 
-      <div v-if="listings.length === 0" class="text-sm" style="color: var(--text-muted)">
-        Niciun jucător listat. Vinde jucători din secțiunea Echipa mea.
+      <div v-if="listings.length === 0" class="flex flex-col items-center py-16 text-center">
+        <div class="text-4xl mb-3">🏪</div>
+        <p class="font-medium" style="color: var(--text-primary)">Piata este goala</p>
+        <p class="text-sm mt-1" style="color: var(--text-muted)">Niciun jucator listat momentan</p>
       </div>
       <div v-else class="grid sm:grid-cols-2 gap-4">
         <div v-for="listing in listings" :key="listing.id"
           class="p-4 rounded-xl"
-          style="background: var(--bg-surface); border: 1px solid var(--border)">
+          style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--accent)">
           <div class="flex gap-3">
             <PlayerAvatar :position="listing.player.position" size="md" />
             <div class="flex-1">
@@ -219,13 +221,15 @@ onMounted(load)
 
     <!-- Incoming offers -->
     <div v-else-if="tab === 'offers'">
-      <div v-if="incoming.length === 0" class="text-sm" style="color: var(--text-muted)">
-        Niciună ofertă primită.
+      <div v-if="incoming.length === 0" class="flex flex-col items-center py-16 text-center">
+        <div class="text-4xl mb-3">📬</div>
+        <p class="font-medium" style="color: var(--text-primary)">Nicio oferta primita</p>
+        <p class="text-sm mt-1" style="color: var(--text-muted)">Cand cineva face o oferta pe jucatorii tai, apare aici</p>
       </div>
       <div v-else class="space-y-4">
         <div v-for="offer in incoming" :key="offer.id"
           class="p-4 rounded-xl"
-          style="background: var(--bg-surface); border: 1px solid var(--border)">
+          style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--warning)">
           <div class="flex gap-3 items-start">
             <PlayerAvatar :position="offer.player.position" size="md" />
             <div class="flex-1">
@@ -254,7 +258,11 @@ onMounted(load)
 
     <!-- Sent offers -->
     <div v-else-if="tab === 'sent'">
-      <div v-if="sent.length === 0" class="text-sm" style="color: var(--text-muted)">Nicio ofertă trimisă.</div>
+      <div v-if="sent.length === 0" class="flex flex-col items-center py-16 text-center">
+        <div class="text-4xl mb-3">📤</div>
+        <p class="font-medium" style="color: var(--text-primary)">Nicio oferta trimisa</p>
+        <p class="text-sm mt-1" style="color: var(--text-muted)">Fa o oferta din sectiunea Piata</p>
+      </div>
       <div v-else class="space-y-3">
         <div v-for="offer in sent" :key="offer.id"
           class="p-4 rounded-xl flex justify-between items-center gap-4"
@@ -263,7 +271,7 @@ onMounted(load)
             <span class="font-semibold" style="color: var(--text-primary)">{{ offer.player.name }}</span>
             <span class="text-sm ml-2" style="color: var(--accent)">{{ formatPrice(offer.offeredPrice) }}</span>
           </div>
-          <span class="text-xs px-2 py-1 rounded"
+          <span class="badge"
             :style="
               offer.status === 'PENDING'  ? 'background: rgba(227,179,65,0.15); color: var(--warning)'  :
               offer.status === 'ACCEPTED' ? 'background: rgba(63,185,80,0.15); color: var(--success)'  :
@@ -276,7 +284,11 @@ onMounted(load)
 
     <!-- History -->
     <div v-else-if="tab === 'history'">
-      <div v-if="recent.length === 0" class="text-sm" style="color: var(--text-muted)">Niciun transfer încă.</div>
+      <div v-if="recent.length === 0" class="flex flex-col items-center py-16 text-center">
+        <div class="text-4xl mb-3">📋</div>
+        <p class="font-medium" style="color: var(--text-primary)">Niciun transfer inca</p>
+        <p class="text-sm mt-1" style="color: var(--text-muted)">Istoricul transferurilor va aparea aici</p>
+      </div>
       <div v-else class="space-y-3">
         <div v-for="t in recent" :key="t.id"
           class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-xl"

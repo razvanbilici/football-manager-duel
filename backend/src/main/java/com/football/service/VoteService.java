@@ -29,6 +29,15 @@ public class VoteService {
         validateTarget(targetType, targetId);
 
         User user = userService.getByEmail(email);
+
+        if (targetType == Vote.TargetType.USER_TEAM) {
+            userTeamRepository.findById(targetId).ifPresent(team -> {
+                if (team.getOwner() != null && team.getOwner().getId().equals(user.getId())) {
+                    throw new BadRequestException("Nu iti poti vota propria echipa");
+                }
+            });
+        }
+
         Vote.VoteType voteType;
         try {
             voteType = Vote.VoteType.valueOf(req.getVoteType().toUpperCase());

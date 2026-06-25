@@ -6,15 +6,30 @@ import PitchView from '../components/PitchView.vue'
 
 const teams = ref([])
 const loading = ref(true)
+const page = ref(0)
+const totalPages = ref(0)
+const totalElements = ref(0)
+const search = ref('')
 
-onMounted(async () => {
+async function load() {
+  loading.value = true
   try {
-    const { data } = await teamApi.getSubmitted()
-    teams.value = data
+    const { data } = await teamApi.getSubmitted({
+      page: page.value,
+      size: 10,
+      sortBy: 'votes',
+      sortDir: 'desc',
+      search: search.value || undefined,
+    })
+    teams.value = data.content
+    totalPages.value = data.totalPages
+    totalElements.value = data.totalElements
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(load)
 </script>
 
 <template>
@@ -50,6 +65,10 @@ onMounted(async () => {
               <span v-if="team.formation">{{ team.formation.name }}</span>
               <span v-if="team.tactic">{{ team.tactic.details }}</span>
             </div>
+            <router-link v-if="team.ownerId" :to="`/user/${team.ownerId}`"
+              class="text-xs hover:underline mt-1 inline-block" style="color: var(--accent)">
+              👤 {{ team.ownerName }}
+            </router-link>
           </div>
           <div class="flex items-center gap-4">
             <span class="font-medium" style="color: var(--accent)">▲ {{ team.votes }}</span>

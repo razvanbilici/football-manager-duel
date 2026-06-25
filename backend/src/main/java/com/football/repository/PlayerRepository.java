@@ -16,4 +16,6 @@ public interface PlayerRepository extends JpaRepository<Player, Long>, org.sprin
     List<Player> search(String q);
 
     List<Player> findByPosition(String position);
+
+    long countByPlayerTeamId(Long playerTeamId);
 }

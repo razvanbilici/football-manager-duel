@@ -1,6 +1,7 @@
 package com.football.controller;
 
 import com.football.dto.AddPlayerRequest;
+import com.football.dto.PagedResponse;
 import com.football.dto.UpdateUserTeamRequest;
 import com.football.dto.UserTeamResponse;
 import com.football.service.UserTeamService;
@@ -11,8 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/user-teams")
 @RequiredArgsConstructor
@@ -22,8 +21,13 @@ public class UserTeamController {
 
     /** All publicly submitted teams, ranked by votes */
     @GetMapping
-    public ResponseEntity<List<UserTeamResponse>> getSubmitted() {
-        return ResponseEntity.ok(userTeamService.getAllSubmitted());
+    public ResponseEntity<PagedResponse<UserTeamResponse>> getSubmitted(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "votes") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) String search) {
+        return ResponseEntity.ok(userTeamService.getAllSubmitted(page, size, sortBy, sortDir, search));
     }
 
     @GetMapping("/{id}")

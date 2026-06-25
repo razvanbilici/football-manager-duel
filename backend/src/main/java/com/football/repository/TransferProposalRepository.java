@@ -12,4 +12,6 @@ public interface TransferProposalRepository extends JpaRepository<TransferPropos
     List<TransferProposal> findByFromUserTeamIdAndStatus(Long teamId, TransferProposal.Status status);
     // Proposals sent by a user
     List<TransferProposal> findByProposerIdOrderByCreatedAtDesc(Long userId);
+    // All proposals for a player with a given status (used to cancel others on accept)
+    List<TransferProposal> findByPlayerIdAndStatus(Long playerId, TransferProposal.Status status);
 }
