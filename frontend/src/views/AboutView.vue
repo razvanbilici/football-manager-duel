@@ -3,8 +3,8 @@
     <section class="text-center py-12">
       <h1 class="text-4xl font-bold text-emerald-400 mb-4">GOAT</h1>
       <p class="text-slate-400 max-w-2xl mx-auto">
-        Cristiano Ronaldo este prezentat aici ca cel mai mare jucător de fotbal din toate timpurile.
-        Cariera sa extraordinară, longevatea, dedicarea și setea de goluri îl plasează în vârful istoriei fotbalului.
+        Cristiano Ronaldo este cel mai mare jucător de fotbal din toate timpurile.
+        Cariera sa extraordinară, longevitatea, dedicarea și setea de goluri îl plasează în vârful istoriei fotbalului.
       </p>
     </section>
 
@@ -13,7 +13,7 @@
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg"
           alt="Cristiano Ronaldo"
-          class="h-72 w-full object-cover"
+          class="h-72 w-full object-scale-down"
         />
         <div class="p-6">
           <h2 class="text-xl font-semibold mb-2">Cristiano Ronaldo</h2>
@@ -26,7 +26,7 @@
 
       <div class="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden">
         <img
-          src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Goat_close_up.jpg"
+          src="https://media.istockphoto.com/id/486869012/photo/goat-looks-at-us.jpg?s=612x612&w=0&k=20&c=yeu3XUkLR2-mO2zwDGNaVL5o0DITA-deNXSKNaCX6bA="
           alt="Goat"
           class="h-72 w-full object-cover"
         />

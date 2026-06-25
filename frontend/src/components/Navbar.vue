@@ -17,8 +17,8 @@ const links = [
   { to: '/my-team', label: 'Echipa mea', auth: true },
   { to: '/profile', label: 'Profil', auth: true },
   { to: '/community', label: 'Comunitate' },
-  { to: '/goat', label: 'GOAT' },
   { to: '/transfers', label: 'Transferuri' },
+  { to: '/goat', label: 'GOAT' },
 ]
 
 const visibleLinks = computed(() =>
@@ -63,7 +63,7 @@ function logout() {
     <!-- Accent top border -->
     <div style="height: 3px; background: var(--accent)"></div>
 
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <div class="max-w-8xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
       <router-link to="/" class="flex items-center gap-2 text-lg shrink-0"
         style="font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent)">
         <span>⚽</span>
