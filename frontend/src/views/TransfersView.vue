@@ -16,6 +16,9 @@ const loading = ref(true)
 const message = ref('')
 
 const listings = ref([])
+const marketPage = ref(0)
+const marketTotalPages = ref(1)
+const loadingListings = ref(false)
 const incoming = ref([])
 const sent = ref([])
 const recent = ref([])
@@ -33,15 +36,25 @@ const visibleTabs = computed(() => tabs.filter((t) => !t.auth || auth.isLoggedIn
 
 const isMyListing = (listing) => listing.userTeamId === auth.user?.userTeam?.id
 
+async function loadListings() {
+  loadingListings.value = true
+  try {
+    const { data } = await transferApi.getListings({ page: marketPage.value, size: 10 })
+    listings.value = data.content
+    marketTotalPages.value = data.totalPages
+  } finally {
+    loadingListings.value = false
+  }
+}
+
 async function load() {
   loading.value = true
   try {
-    const tasks = [transferApi.getListings(), transferApi.getRecent()]
+    const tasks = [loadListings(), transferApi.getRecent()]
     if (auth.isLoggedIn) {
       tasks.push(transferApi.getIncomingProposals(), transferApi.getSentProposals())
     }
     const results = await Promise.all(tasks)
-    listings.value = results[0].data
     recent.value = results[1].data
     if (auth.isLoggedIn) {
       incoming.value = results[2].data
@@ -216,6 +229,23 @@ onMounted(load)
             </div>
           </template>
         </div>
+      </div>
+
+      <div v-if="marketTotalPages > 1"
+        class="flex items-center justify-center gap-2 mt-6 flex-wrap">
+        <button @click="marketPage--; loadListings()"
+          :disabled="marketPage === 0"
+          class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">
+          ‹ Anterior
+        </button>
+        <span class="text-sm px-3" style="color: var(--text-muted)">
+          {{ marketPage + 1 }} / {{ marketTotalPages }}
+        </span>
+        <button @click="marketPage++; loadListings()"
+          :disabled="marketPage >= marketTotalPages - 1"
+          class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">
+          Urmator ›
+        </button>
       </div>
     </div>
 

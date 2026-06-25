@@ -48,7 +48,7 @@ export const voteApi = {
 export const transferApi = {
   getRecent: () => api.get('/transfers'),
   buy: (playerId) => api.post(`/transfers/buy/${playerId}`),
-  getListings: () => api.get('/transfers/listings'),
+  getListings: (params = {}) => api.get('/transfers/listings', { params }),
   getMyListings: () => api.get('/transfers/listings/mine'),
   createListing: (playerId, askingPrice) =>
     api.post('/transfers/listings', { playerId, askingPrice }),

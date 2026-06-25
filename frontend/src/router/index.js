@@ -14,6 +14,7 @@ const routes = [
   { path: '/profile', name: 'profile', component: () => import('../views/ProfileView.vue'), meta: { requiresAuth: true } },
   { path: '/admin', name: 'admin', component: () => import('../views/AdminView.vue'), meta: { requiresAuth: true } },
   { path: '/user/:id', name: 'user-profile', component: () => import('../views/UserProfileView.vue') },
+  { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('../views/NotFoundView.vue') },
 ]
 
 const router = createRouter({

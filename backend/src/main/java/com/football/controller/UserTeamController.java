@@ -39,7 +39,7 @@ public class UserTeamController {
     @PatchMapping("/{id}")
     public ResponseEntity<UserTeamResponse> update(
             @PathVariable Long id,
-            @RequestBody UpdateUserTeamRequest req,
+            @Valid @RequestBody UpdateUserTeamRequest req,
             @AuthenticationPrincipal UserDetails ud) {
         return ResponseEntity.ok(userTeamService.update(id, ud.getUsername(), req));
     }
