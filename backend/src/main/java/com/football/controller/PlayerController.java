@@ -40,6 +40,11 @@ public class PlayerController {
         return ResponseEntity.ok(playerService.getById(id));
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<java.util.List<PlayerResponse>> getRecent() {
+        return ResponseEntity.ok(playerService.getRecentPlayers());
+    }
+
     /** Admin only – create a new player in a default club */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")

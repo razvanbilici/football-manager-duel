@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "player")
@@ -44,3 +47,6 @@ public class Player {
     @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean available = true;
 }
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;

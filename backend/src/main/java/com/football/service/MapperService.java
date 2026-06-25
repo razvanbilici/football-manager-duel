@@ -32,6 +32,7 @@ public class MapperService {
         r.setPreferredFoot(p.getPreferredFoot());
         r.setShirtNumber(p.getShirtNumber());
         r.setAvailable(p.getAvailable() != null ? p.getAvailable() : true);
+        if (p.getCreatedAt() != null) r.setCreatedAt(p.getCreatedAt().toString());
         return r;
     }
 

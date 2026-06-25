@@ -15,4 +15,5 @@ import java.math.BigDecimal;
     public String preferredFoot;
     public Integer shirtNumber;
     public Boolean available;
+    public String createdAt;
 }

@@ -1,7 +1,26 @@
 <script setup>
 import { useAuthStore } from '../stores/auth'
+import { ref, onMounted } from 'vue'
+import { playerApi } from '../api'
+import PlayerCard from '../components/PlayerCard.vue'
 
 const auth = useAuthStore()
+const recent = ref([])
+const loadingRecent = ref(true)
+
+async function loadRecent() {
+  loadingRecent.value = true
+  try {
+    const { data } = await playerApi.getRecent()
+    recent.value = data
+  } catch (e) {
+    recent.value = []
+  } finally {
+    loadingRecent.value = false
+  }
+}
+
+onMounted(loadRecent)
 </script>
 
 <template>
@@ -38,6 +57,21 @@ const auth = useAuthStore()
           style="background: var(--accent); color: #0d1117">
           Mergi la echipa mea
         </router-link>
+      </div>
+    </section>
+
+    <!-- Recent players -->
+    <section v-if="!loadingRecent && recent.length" class="mt-8">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-2xl font-semibold">Jucători noi</h2>
+          <p class="text-sm" style="color: var(--text-muted)">Ultimii jucători adăugați</p>
+        </div>
+        <router-link to="/players" class="text-sm" style="color: var(--accent)">Vezi toți</router-link>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <PlayerCard v-for="p in recent" :key="p.id" :player="p" />
       </div>
     </section>
 

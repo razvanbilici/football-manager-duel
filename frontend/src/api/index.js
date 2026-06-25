@@ -14,6 +14,7 @@ export const userApi = {
 export const playerApi = {
   getAll: (params = {}) => api.get('/players', { params }),
   getById: (id) => api.get(`/players/${id}`),
+  getRecent: () => api.get('/players/recent'),
 }
 
 export const clubApi = {

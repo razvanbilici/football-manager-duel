@@ -39,6 +39,12 @@ public class PlayerService {
         return mapper.toPlayerResponse(findById(id));
     }
 
+    public java.util.List<PlayerResponse> getRecentPlayers() {
+        return playerRepository.findTop8ByOrderByCreatedAtDesc().stream()
+                .map(mapper::toPlayerResponse)
+                .collect(Collectors.toList());
+    }
+
     public List<PlayerResponse> search(String q) {
         return playerRepository.search(q).stream().map(mapper::toPlayerResponse).collect(Collectors.toList());
     }
