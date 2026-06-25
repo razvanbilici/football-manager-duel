@@ -11,6 +11,9 @@ const routes = [
   { path: '/my-team', name: 'my-team', component: () => import('../views/MyTeamView.vue'), meta: { requiresAuth: true } },
   { path: '/community', name: 'community', component: () => import('../views/CommunityView.vue') },
   { path: '/transfers', name: 'transfers', component: () => import('../views/TransfersView.vue') },
+  { path: '/profile', name: 'profile', component: () => import('../views/ProfileView.vue'), meta: { requiresAuth: true } },
+  { path: '/admin', name: 'admin', component: () => import('../views/AdminView.vue'), meta: { requiresAuth: true } },
+  { path: '/user/:id', name: 'user-profile', component: () => import('../views/UserProfileView.vue') },
 ]
 
 const router = createRouter({

@@ -2,13 +2,18 @@ package com.football.service;
 
 import com.football.dto.*;
 import com.football.entity.*;
+import com.football.repository.PlayerRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MapperService {
+
+    private final PlayerRepository playerRepository;
 
     public PlayerResponse toPlayerResponse(Player p) {
         PlayerResponse r = new PlayerResponse();
@@ -38,6 +43,7 @@ public class MapperService {
         r.setLeague(pt.getLeague());
         r.setCup(pt.getCup());
         r.setVotes(pt.getVotes());
+        r.setPlayerCount((int) playerRepository.countByPlayerTeamId(pt.getId()));
         return r;
     }
 
@@ -87,6 +93,10 @@ public class MapperService {
         r.setPlayers(ut.getPlayers().stream()
                 .map(this::toUserTeamPlayerResponse)
                 .collect(Collectors.toList()));
+        if (ut.getOwner() != null) {
+            r.setOwnerId(ut.getOwner().getId());
+            r.setOwnerName(ut.getOwner().getName());
+        }
         return r;
     }
 
@@ -96,6 +106,7 @@ public class MapperService {
         r.setName(u.getName());
         r.setEmail(u.getEmail());
         r.setBudget(u.getBudget());
+        r.setRole(u.getRole().name());
         if (u.getUserTeam() != null) r.setUserTeam(toUserTeamResponse(u.getUserTeam()));
         if (u.getFavouritePlayerTeam() != null) {
             r.setFavouritePlayerTeamId(u.getFavouritePlayerTeam().getId());

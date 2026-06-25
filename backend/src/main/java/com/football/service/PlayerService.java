@@ -1,6 +1,7 @@
 package com.football.service;
 
 import com.football.dto.CreatePlayerRequest;
+import com.football.dto.PagedResponse;
 import com.football.dto.PlayerResponse;
 import com.football.entity.Player;
 import com.football.entity.PlayerTeam;
@@ -9,6 +10,10 @@ import com.football.repository.PlayerRepository;
 import com.football.repository.PlayerTeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,9 +69,10 @@ public class PlayerService {
         return mapper.toPlayerResponse(saved);
     }
 
-    public List<PlayerResponse> filter(String q, String position,
+    public PagedResponse<PlayerResponse> filter(String q, String position,
             java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice,
-            Integer minAge, Integer maxAge, Boolean available) {
+            Integer minAge, Integer maxAge, Boolean available,
+            int page, int size, String sortBy, String sortDir) {
 
         org.springframework.data.jpa.domain.Specification<com.football.entity.Player> spec =
             org.springframework.data.jpa.domain.Specification.where(null);
@@ -96,9 +102,35 @@ public class PlayerService {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("available"), available));
         }
 
-        return playerRepository.findAll(spec).stream()
-            .map(mapper::toPlayerResponse)
-            .collect(java.util.stream.Collectors.toList());
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+            ? Sort.by(sortBy).descending()
+            : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<PlayerResponse> result = playerRepository.findAll(spec, pageable)
+            .map(mapper::toPlayerResponse);
+        return PagedResponse.of(result);
+    }
+
+    @Transactional
+    public PlayerResponse update(Long id, CreatePlayerRequest req) {
+        Player p = findById(id);
+        if (req.getName() != null) p.setName(req.getName());
+        if (req.getNickname() != null) p.setNickname(req.getNickname());
+        if (req.getPosition() != null) p.setPosition(req.getPosition());
+        if (req.getPrice() != null) p.setPrice(req.getPrice());
+        if (req.getAge() != null) p.setAge(req.getAge());
+        if (req.getHeightCm() != null) p.setHeightCm(req.getHeightCm());
+        if (req.getNationality() != null) p.setNationality(req.getNationality());
+        if (req.getPreferredFoot() != null) p.setPreferredFoot(req.getPreferredFoot());
+        if (req.getShirtNumber() != null) p.setShirtNumber(req.getShirtNumber());
+        if (req.getAvailable() != null) p.setAvailable(req.getAvailable());
+        return mapper.toPlayerResponse(playerRepository.save(p));
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        playerRepository.deleteById(id);
     }
 
     public Player findById(Long id) {

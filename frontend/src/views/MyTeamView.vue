@@ -314,15 +314,16 @@ onMounted(load)
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-semibold text-sm">Lotul meu ({{ squadPlayers.length }})</h3>
             </div>
-            <div class="mb-3 text-xs font-medium" style="color: var(--accent)">
-              Valoare totală: {{ formatPrice(totalValue) }}
+            <div class="text-2xl font-bold mb-1" style="color: var(--accent)">
+              {{ formatPrice(totalValue) }}
             </div>
+            <p class="text-xs mb-3" style="color: var(--text-muted)">Valoare totala lot</p>
 
             <div v-if="squadPlayers.length === 0" class="py-8 text-center text-sm" style="color: var(--text-muted)">
               Niciun jucător. Cumpără de la Cluburi.
             </div>
 
-            <div v-else class="space-y-2 max-h-[480px] overflow-y-auto pr-1">
+            <div v-else class="space-y-2 max-h-[480px] overflow-y-auto pr-1" style="scrollbar-width: thin; scrollbar-color: var(--bg-elevated) transparent;">
               <div
                 v-for="tp in squadPlayers"
                 :key="tp.id"

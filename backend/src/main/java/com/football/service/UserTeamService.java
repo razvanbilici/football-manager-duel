@@ -1,6 +1,7 @@
 package com.football.service;
 
 import com.football.dto.AddPlayerRequest;
+import com.football.dto.PagedResponse;
 import com.football.dto.UpdateUserTeamRequest;
 import com.football.dto.UserTeamResponse;
 import com.football.entity.*;
@@ -11,11 +12,14 @@ import com.football.repository.*;
 import com.football.util.SquadSlots;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,9 +33,22 @@ public class UserTeamService {
     private final MapperService mapper;
     private final UserService userService;
 
-    public List<UserTeamResponse> getAllSubmitted() {
-        return userTeamRepository.findAllSubmittedOrderByVotes()
-                .stream().map(mapper::toUserTeamResponse).collect(Collectors.toList());
+    public PagedResponse<UserTeamResponse> getAllSubmitted(
+            int page, int size, String sortBy, String sortDir, String search) {
+
+        Specification<UserTeam> spec = (root, q, cb) -> cb.equal(root.get("submitted"), true);
+        if (search != null && !search.isBlank()) {
+            String like = "%" + search.toLowerCase() + "%";
+            spec = spec.and((root, q, cb) -> cb.like(cb.lower(root.get("name")), like));
+        }
+
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return PagedResponse.of(
+                userTeamRepository.findAll(spec, pageable).map(mapper::toUserTeamResponse));
     }
 
     public UserTeamResponse getById(Long id) {

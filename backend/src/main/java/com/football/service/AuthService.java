@@ -55,6 +55,8 @@ public class AuthService {
         return resp;
     }
 
+    private static final long REMEMBER_ME_MS = 30L * 24 * 60 * 60 * 1000; // 30 days
+
     public AuthResponse login(LoginRequest req) {
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
@@ -62,7 +64,9 @@ public class AuthService {
         User user = userRepository.findByEmail(req.getEmail()).orElseThrow();
         log.info("User logged in: {}", user.getEmail());
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = req.isRememberMe()
+                ? jwtUtil.generateToken(user.getEmail(), REMEMBER_ME_MS)
+                : jwtUtil.generateToken(user.getEmail());
         AuthResponse resp = new AuthResponse();
         resp.setToken(token);
         resp.setUserId(user.getId());

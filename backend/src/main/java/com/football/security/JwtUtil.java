@@ -25,10 +25,14 @@ public class JwtUtil {
     }
 
     public String generateToken(String email) {
+        return generateToken(email, expirationMs);
+    }
+
+    public String generateToken(String email, long customExpirationMs) {
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expirationMs))
+                .expiration(new Date(System.currentTimeMillis() + customExpirationMs))
                 .signWith(key())
                 .compact();
     }

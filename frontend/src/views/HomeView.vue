@@ -7,7 +7,8 @@ const auth = useAuthStore()
 <template>
   <div class="space-y-8">
     <!-- Hero -->
-    <section class="text-center py-16">
+    <section class="text-center py-16" style="position: relative; overflow: hidden">
+      <span style="position: absolute; font-size: 12rem; opacity: 0.04; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; user-select: none; line-height: 1;">⚽</span>
       <h1 class="text-5xl font-extrabold mb-4 tracking-tight"
         style="background: linear-gradient(135deg, var(--accent) 0%, #e6edf3 60%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text">
         Football Manager
@@ -40,32 +41,43 @@ const auth = useAuthStore()
       </div>
     </section>
 
+    <div style="height:1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); margin: 2rem 0;" />
+
     <!-- Feature cards -->
-    <section class="grid sm:grid-cols-3 gap-4">
+    <section class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <router-link
         to="/players"
-        class="p-6 rounded-xl transition-all hover:scale-[1.02]"
-        style="background: var(--bg-surface); border: 1px solid var(--border)">
+        class="feature-card card card-hover p-6">
         <div class="text-2xl mb-3">👤</div>
         <h2 class="font-semibold mb-1" style="color: var(--text-primary)">Jucători</h2>
         <p class="text-sm" style="color: var(--text-muted)">Explorează și cumpără jucători de top</p>
       </router-link>
       <router-link
         to="/clubs"
-        class="p-6 rounded-xl transition-all hover:scale-[1.02]"
-        style="background: var(--bg-surface); border: 1px solid var(--border)">
+        class="feature-card card card-hover p-6">
         <div class="text-2xl mb-3">🏆</div>
         <h2 class="font-semibold mb-1" style="color: var(--text-primary)">Cluburi</h2>
         <p class="text-sm" style="color: var(--text-muted)">Barcelona, Real Madrid, Arsenal și altele</p>
       </router-link>
       <router-link
         to="/community"
-        class="p-6 rounded-xl transition-all hover:scale-[1.02]"
-        style="background: var(--bg-surface); border: 1px solid var(--border)">
+        class="feature-card card card-hover p-6">
         <div class="text-2xl mb-3">🌍</div>
         <h2 class="font-semibold mb-1" style="color: var(--text-primary)">Comunitate</h2>
         <p class="text-sm" style="color: var(--text-muted)">Votează cele mai bune echipe</p>
       </router-link>
+      <router-link
+        to="/transfers"
+        class="feature-card card card-hover p-6">
+        <div class="text-2xl mb-3">🔄</div>
+        <h2 class="font-semibold mb-1" style="color: var(--text-primary)">Transferuri</h2>
+        <p class="text-sm" style="color: var(--text-muted)">Cumpara, vinde si negociaza jucatori</p>
+      </router-link>
     </section>
   </div>
 </template>
+
+<style scoped>
+.feature-card { border-top: 2px solid transparent; transition: border-color 0.2s; }
+.feature-card:hover { border-top-color: var(--accent); }
+</style>

@@ -1,12 +1,13 @@
 import api from './client'
 
 export const authApi = {
-  login: (email, password) => api.post('/auth/login', { email, password }),
+  login: (email, password, rememberMe = false) => api.post('/auth/login', { email, password, rememberMe }),
   register: (name, email, password) => api.post('/auth/register', { name, email, password }),
 }
 
 export const userApi = {
   me: () => api.get('/users/me'),
+  getById: (id) => api.get(`/users/${id}`),
   setFavourite: (clubId) => api.put(`/users/me/favourite-team/${clubId}`),
 }
 
@@ -29,7 +30,7 @@ export const tacticApi = {
 }
 
 export const teamApi = {
-  getSubmitted: () => api.get('/user-teams'),
+  getSubmitted: (params = {}) => api.get('/user-teams', { params }),
   getById: (id) => api.get(`/user-teams/${id}`),
   update: (id, data) => api.patch(`/user-teams/${id}`, data),
   addPlayer: (id, playerId, slotNumber) =>
@@ -58,6 +59,22 @@ export const transferApi = {
   getSentProposals: () => api.get('/transfers/proposals/sent'),
   acceptProposal: (id) => api.patch(`/transfers/proposals/${id}/accept`),
   rejectProposal: (id) => api.patch(`/transfers/proposals/${id}/reject`),
+}
+
+export const adminApi = {
+  getUsers: () => api.get('/admin/users'),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
+  setRole: (id, role) => api.patch(`/admin/users/${id}/role`, { role }),
+  createPlayer: (data) => api.post('/admin/players', data),
+  updatePlayer: (id, data) => api.patch(`/admin/players/${id}`, data),
+  deletePlayer: (id) => api.delete(`/admin/players/${id}`),
+  createClub: (data) => api.post('/admin/clubs', data),
+}
+
+export const profileApi = {
+  update: (data) => api.patch('/users/me', data),
+  changePassword: (data) => api.patch('/users/me/password', data),
+  getStats: () => api.get('/users/me/stats'),
 }
 
 export const notificationApi = {

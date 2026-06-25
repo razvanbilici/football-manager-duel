@@ -15,6 +15,7 @@ const links = [
   { to: '/players', label: 'Jucători' },
   { to: '/clubs', label: 'Cluburi' },
   { to: '/my-team', label: 'Echipa mea', auth: true },
+  { to: '/profile', label: 'Profil', auth: true },
   { to: '/community', label: 'Comunitate' },
   { to: '/transfers', label: 'Transferuri' },
 ]
@@ -78,6 +79,15 @@ function logout() {
           active-class="nav-link-active"
         >
           {{ link.label }}
+        </router-link>
+        <router-link
+          v-if="auth.isAdmin"
+          to="/admin"
+          class="px-2 py-1 rounded-full transition-colors whitespace-nowrap text-xs font-semibold"
+          style="color: var(--accent); border: 1px solid var(--accent)"
+          active-class="nav-link-active"
+        >
+          ⚙ Admin
         </router-link>
       </div>
 

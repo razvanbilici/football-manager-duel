@@ -11,5 +11,6 @@ public class PlayerTeamResponse {
     public int league;
     public int cup;
     public int votes;
+    public int playerCount;
     public List<PlayerResponse> players;
 }

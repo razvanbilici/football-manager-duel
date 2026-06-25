@@ -387,10 +387,10 @@ public class DataSeeder implements CommandLineRunner {
         userRepo.save(admin);
     }
 
-    /** Ensure all users have the 2B starting budget (dev convenience). */
+    /** Set the 2B starting budget only for users who have never had one. */
     private void normalizeBudgets() {
         userRepo.findAll().forEach(user -> {
-            if (user.getBudget() == null || user.getBudget() < 2_000_000_000.0) {
+            if (user.getBudget() == null) {
                 user.setBudget(2_000_000_000.0);
                 userRepo.save(user);
             }
