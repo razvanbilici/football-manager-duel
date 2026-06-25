@@ -46,7 +46,8 @@ public class Player {
 
     @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean available = true;
-}
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+}
