@@ -16,8 +16,8 @@ onMounted(() => {
     <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-8">
       <router-view />
     </main>
-    <footer class="border-t border-slate-800 py-4 text-center text-sm text-slate-500">
-      Football Manager — Vue + Spring Boot
+    <footer class="border-t border-slate-800 py-4 text-center text-slate-500">
+      Proiect AWBD: Ciurea Claudiu (406), Turcu Andrei (405), Bilici Razvan (405)
     </footer>
   </div>
 </template>

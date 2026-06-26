@@ -6,6 +6,9 @@ import PlayerCard from '../components/PlayerCard.vue'
 import PlayerFilters from '../components/PlayerFilters.vue'
 import PlayerDetailModal from '../components/PlayerDetailModal.vue'
 
+// Importăm videoclipul din assets
+import bgVideo from '../assets/playerview.mp4'
+
 const auth = useAuthStore()
 const players = ref([])
 const filters = ref({})
@@ -74,99 +77,105 @@ onMounted(load)
 </script>
 
 <template>
-  <div>
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">Jucători</h1>
-      <!-- Mobile filter toggle -->
-      <button class="lg:hidden px-3 py-1.5 rounded-lg text-sm"
-        style="background: var(--bg-elevated); color: var(--text-primary)"
-        @click="showFilters = !showFilters">
-        {{ showFilters ? 'Ascunde filtrele ▲' : 'Filtre ▼' }}
-      </button>
-    </div>
+  <div class="relative min-h-screen">
+    
+    <video
+      :src="bgVideo"
+      autoplay
+      loop
+      muted
+      playsinline
+      style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: -2; pointer-events: none;"
+    ></video>
+    
+    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(13, 17, 23, 0.7); z-index: -1; pointer-events: none;"></div>
 
-    <p v-if="message" class="mb-4 text-sm"
-      :style="{ color: message.includes('eșuat') ? 'var(--danger)' : 'var(--success)' }">
-      {{ message }}
-    </p>
-
-    <div class="flex gap-6">
-      <!-- Filter sidebar -->
-      <aside class="w-64 shrink-0 hidden lg:block">
-        <PlayerFilters :model-value="filters" @update:model-value="onFiltersChange" />
-      </aside>
-
-      <!-- Mobile filter panel -->
-      <div v-if="showFilters" class="lg:hidden w-full mb-4">
-        <PlayerFilters :model-value="filters" @update:model-value="onFiltersChange" />
+    <div class="relative z-10">
+      
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">Jucători</h1>
+        <button class="lg:hidden px-3 py-1.5 rounded-lg text-sm"
+          style="background: var(--bg-elevated); color: var(--text-primary)"
+          @click="showFilters = !showFilters">
+          {{ showFilters ? 'Ascunde filtrele ▲' : 'Filtre ▼' }}
+        </button>
       </div>
 
-      <!-- Player grid -->
-      <div class="flex-1">
-        <!-- Sort controls -->
-        <div class="flex items-center gap-2 mb-4 flex-wrap">
-          <span class="text-sm" style="color: var(--text-muted)">Sorteaza:</span>
-          <select v-model="sortBy" @change="page = 0; load()"
-            class="text-sm px-2 py-1.5 rounded outline-none"
-            style="background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary)">
-            <option value="name">Nume</option>
-            <option value="price">Pret</option>
-            <option value="age">Varsta</option>
-          </select>
-          <button @click="sortDir = sortDir === 'asc' ? 'desc' : 'asc'; page = 0; load()"
-            class="px-3 py-1.5 rounded text-sm transition-colors"
-            style="background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-muted)">
-            {{ sortDir === 'asc' ? '↑ Crescator' : '↓ Descrescator' }}
-          </button>
-          <span class="text-xs ml-auto" style="color: var(--text-muted)">
-            {{ totalElements }} jucatori
-          </span>
+      <p v-if="message" class="mb-4 text-sm"
+        :style="{ color: message.includes('eșuat') ? 'var(--danger)' : 'var(--success)' }">
+        {{ message }}
+      </p>
+
+      <div class="flex gap-6">
+        <aside class="w-64 shrink-0 hidden lg:block">
+          <PlayerFilters :model-value="filters" @update:model-value="onFiltersChange" />
+        </aside>
+
+        <div v-if="showFilters" class="lg:hidden w-full mb-4">
+          <PlayerFilters :model-value="filters" @update:model-value="onFiltersChange" />
         </div>
 
-        <!-- Skeleton -->
-        <div v-if="loading" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <div v-for="i in 9" :key="i" class="skeleton h-44 rounded-xl" />
-        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-4 flex-wrap">
+            <span class="text-sm" style="color: var(--text-muted)">Sorteaza:</span>
+            <select v-model="sortBy" @change="page = 0; load()"
+              class="text-sm px-2 py-1.5 rounded outline-none"
+              style="background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary)">
+              <option value="name">Nume</option>
+              <option value="price">Pret</option>
+              <option value="age">Varsta</option>
+            </select>
+            <button @click="sortDir = sortDir === 'asc' ? 'desc' : 'asc'; page = 0; load()"
+              class="px-3 py-1.5 rounded text-sm transition-colors"
+              style="background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-muted)">
+              {{ sortDir === 'asc' ? '↑ Crescator' : '↓ Descrescator' }}
+            </button>
+            <span class="text-xs ml-auto" style="color: var(--text-muted)">
+              {{ totalElements }} jucatori
+            </span>
+          </div>
 
-        <!-- Empty state -->
-        <div v-else-if="players.length === 0"
-          class="flex flex-col items-center justify-center py-20 text-center">
-          <div class="text-5xl mb-4">🔍</div>
-          <h3 class="text-lg font-semibold mb-1" style="color: var(--text-primary)">Niciun jucător găsit</h3>
-          <p class="text-sm" style="color: var(--text-muted)">Încearcă să modifici filtrele.</p>
-        </div>
+          <div v-if="loading" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div v-for="i in 9" :key="i" class="skeleton h-44 rounded-xl" />
+          </div>
 
-        <!-- Cards -->
-        <div v-else class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <PlayerCard
-            v-for="player in players"
-            :key="player.id"
-            :player="player"
-            :show-buy="auth.isLoggedIn"
-            :is-owned="ownedPlayerIds.has(player.id)"
-            @buy="buyPlayer"
-            @view-detail="openDetail"
-          />
-        </div>
+          <div v-else-if="players.length === 0"
+            class="flex flex-col items-center justify-center py-20 text-center">
+            <div class="text-5xl mb-4">🔍</div>
+            <h3 class="text-lg font-semibold mb-1" style="color: var(--text-primary)">Niciun jucător găsit</h3>
+            <p class="text-sm" style="color: var(--text-muted)">Încearcă să modifici filtrele.</p>
+          </div>
 
-        <!-- Pagination -->
-        <div v-if="totalPages > 1" class="flex items-center justify-center gap-2 mt-8 flex-wrap">
-          <button @click="page = 0; load()" :disabled="page === 0"
-            class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">««</button>
-          <button @click="page--; load()" :disabled="page === 0"
-            class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">‹ Anterior</button>
-          <span class="text-sm px-3" style="color: var(--text-muted)">
-            {{ page + 1 }} / {{ totalPages }}
-          </span>
-          <button @click="page++; load()" :disabled="page >= totalPages - 1"
-            class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">Urmator ›</button>
-          <button @click="page = totalPages - 1; load()" :disabled="page >= totalPages - 1"
-            class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">»»</button>
+          <div v-else class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <PlayerCard
+              v-for="player in players"
+              :key="player.id"
+              :player="player"
+              :show-buy="auth.isLoggedIn"
+              :is-owned="ownedPlayerIds.has(player.id)"
+              @buy="buyPlayer"
+              @view-detail="openDetail"
+            />
+          </div>
+
+          <div v-if="totalPages > 1" class="flex items-center justify-center gap-2 mt-8 flex-wrap">
+            <button @click="page = 0; load()" :disabled="page === 0"
+              class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">««</button>
+            <button @click="page--; load()" :disabled="page === 0"
+              class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">‹ Anterior</button>
+            <span class="text-sm px-3" style="color: var(--text-muted)">
+              {{ page + 1 }} / {{ totalPages }}
+            </span>
+            <button @click="page++; load()" :disabled="page >= totalPages - 1"
+              class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">Urmator ›</button>
+            <button @click="page = totalPages - 1; load()" :disabled="page >= totalPages - 1"
+              class="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40">»»</button>
+          </div>
         </div>
       </div>
+
     </div>
 
-    <!-- Detail modal -->
     <PlayerDetailModal
       :player="selectedPlayer"
       :show="showModal"
@@ -176,3 +185,8 @@ onMounted(load)
     />
   </div>
 </template>
+
+<style scoped>
+.feature-card { border-top: 2px solid transparent; transition: border-color 0.2s; }
+.feature-card:hover { border-top-color: var(--accent); }
+</style>
