@@ -1,9 +1,34 @@
-﻿Run spring backend server via IntelliJ / Eclipse IDE / terminal: 
+# Setup
 
- **mvn spring-boot:run**
+## Cerințe
 
-Run frontend server: 
+- Java (ver. >= 8)
+- Maven
+- node JS, npm
 
-1)Install dependencies: npm install 
+## Pornirea Backend-ului
 
-2)npm run dev
+### Varianta 1: IntelliJ IDEA sau Eclipse
+
+Run la aplicația Spring Boot din IDE
+
+### Varianta 2: Din terminal
+
+```bash
+mvn spring-boot:run
+```
+
+## Pornirea Frontend-ului
+
+1. Instalează dependențele proiectului:
+
+```bash
+npm install
+```
+
+2. Pornește dev serverul:
+
+```bash
+npm run dev
+```
+
